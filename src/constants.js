@@ -1,0 +1,46 @@
+export const colorFromGrid = [
+  "#ED5565",
+  "#AC92EC",
+  "#5D9CEC",
+  "#48CFAD",
+  "#A0D468",
+  "#FFCE54",
+  "#FC6E51",
+  "#ED5565",
+  "#AC92EC",
+  "#5D9CEC",
+  "#48CFAD",
+  "#A0D468",
+  "#FFCE54",
+  "#FC6E51",
+  "#ED5565",
+];
+
+export const noteFromGrid = [
+  "C5",
+  "B4",
+  "A4",
+  "G4",
+  "F4",
+  "E4",
+  "D4",
+  "C4",
+  "B3",
+  "A3",
+  "G3",
+  "F3",
+  "E3",
+  "D3",
+  "C3",
+];
+
+export const timeFromGrid = [
+  0,
+  "0:0:2",
+  "0:1",
+  "0:1:2",
+  "0:2",
+  "0:2:2",
+  "0:3",
+  "0:3:2",
+];
