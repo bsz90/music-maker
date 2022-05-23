@@ -66,6 +66,9 @@ export function Note({
           isDragging.dragging &&
           document.elementFromPoint(x, y) === ref.current
         ) {
+          if (!isDragging.toggleOff) {
+            synth.triggerAttackRelease(notes[rowId], "16n");
+          }
           dispatch({
             type: "toggle",
             payload: {
