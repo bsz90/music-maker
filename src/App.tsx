@@ -62,6 +62,11 @@ function App() {
     column: 0,
   });
 
+  const [isDragging, setIsDragging] = useState({
+    dragging: false,
+    toggleOff: false,
+  });
+
   const [synth] = useState(() =>
     new Tone.PolySynth(Tone.Synth).toDestination()
   );
@@ -85,6 +90,8 @@ function App() {
                     columnId={columnId}
                     synth={synth}
                     focusedButton={focusedButton}
+                    isDragging={isDragging}
+                    setIsDragging={setIsDragging}
                   ></Note>
                 );
               })}
