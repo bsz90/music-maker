@@ -1,4 +1,4 @@
-import { Dispatch } from "react";
+import { Dispatch, useEffect, useRef } from "react";
 import { colors, notes } from "./constants";
 import * as Tone from "tone";
 
@@ -8,6 +8,7 @@ export function Note({
   rowId,
   columnId,
   synth,
+  focusedButton,
 }: {
   grid: number[][];
   dispatch: Dispatch<{
@@ -21,8 +22,11 @@ export function Note({
   rowId: number;
   columnId: number;
   synth: Tone.PolySynth<Tone.Synth<Tone.SynthOptions>>;
+  focusedButton: { row: number; column: number };
 }) {
   const color = colors[rowId];
+
+  const ref = useRef<HTMLButtonElement>(null);
 
   const handleButtonClick = () => {
     const buttonIsOn = grid[rowId][columnId] === 1;
@@ -36,11 +40,17 @@ export function Note({
     });
   };
 
+  useEffect(() => {
+    if (focusedButton.row === rowId && focusedButton.column === columnId)
+      ref.current?.focus();
+  }, [columnId, focusedButton.column, focusedButton.row, rowId]);
+
   return (
     <button
       className="w-auto border-2 rounded-full overflow-hidden"
       style={{ outlineColor: color }}
       onClick={handleButtonClick}
+      ref={ref}
     >
       <div
         className="h-full transition-all"
