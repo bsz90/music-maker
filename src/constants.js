@@ -1,4 +1,4 @@
-export const colorFromGrid = [
+export const colors = [
   "#ED5565",
   "#AC92EC",
   "#5D9CEC",
@@ -16,7 +16,7 @@ export const colorFromGrid = [
   "#ED5565",
 ];
 
-export const noteFromGrid = [
+export const notes = [
   "C5",
   "B4",
   "A4",
@@ -34,7 +34,7 @@ export const noteFromGrid = [
   "C3",
 ];
 
-export const timeFromGrid = [
+export const beatToPlayNote = [
   0,
   "0:0:2",
   "0:1",
