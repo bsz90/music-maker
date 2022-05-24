@@ -3,6 +3,22 @@ import { colors, notes } from "./constants";
 import * as Tone from "tone";
 import { useGesture } from "@use-gesture/react";
 
+const equals = (playedNotes: number[], newElementCoordinates: number[]) =>
+  playedNotes.length === newElementCoordinates.length &&
+  playedNotes.every((coord, i) => {
+    return coord === newElementCoordinates[i];
+  });
+
+const noteIsPlayed = (
+  playedNotes: number[][],
+  newElementCoordinates: number[]
+) => {
+  for (let i = 0; i < playedNotes.length; i++) {
+    if (equals(playedNotes[i], newElementCoordinates)) return true;
+  }
+  return false;
+};
+
 export function Note({
   grid,
   dispatch,
@@ -12,6 +28,8 @@ export function Note({
   focusedButton,
   isDragging,
   setIsDragging,
+  playedNotes,
+  setPlayedNotes,
 }: {
   grid: number[][];
   dispatch: Dispatch<{
@@ -30,6 +48,8 @@ export function Note({
   setIsDragging: Dispatch<
     SetStateAction<{ dragging: boolean; startingButtonWasActive: boolean }>
   >;
+  playedNotes: number[][];
+  setPlayedNotes: Dispatch<SetStateAction<number[][]>>;
 }) {
   const color = colors[rowId];
 
@@ -41,9 +61,9 @@ export function Note({
     {
       onDragStart: ({ args }) => {
         if (!buttonIsOn) {
+          setPlayedNotes([args]);
           synth.triggerAttackRelease(notes[args[0]], "16n");
         }
-
         dispatch({
           type: "toggle",
           payload: {
@@ -65,6 +85,19 @@ export function Note({
           const newElementCoordinates = elem.id
             .split(", ")
             .map((string) => +string);
+
+          if (
+            !isDragging.startingButtonWasActive &&
+            !noteIsPlayed(playedNotes, newElementCoordinates)
+          ) {
+            setPlayedNotes((prev) => {
+              const newState = [...prev];
+              newState.push(newElementCoordinates);
+              return newState;
+            });
+            synth.triggerAttackRelease(notes[newElementCoordinates[0]], "16n");
+          }
+
           dispatch({
             type: "toggle",
             payload: {
@@ -75,10 +108,12 @@ export function Note({
           });
         }
       },
-      onDragEnd: () =>
+      onDragEnd: () => {
         setIsDragging((prev) => {
           return { ...prev, dragging: false };
-        }),
+        });
+        setPlayedNotes([]);
+      },
     },
     { drag: { pointer: { capture: false } } }
   );

@@ -67,6 +67,8 @@ function App() {
     startingButtonWasActive: false,
   });
 
+  const [playedNotes, setPlayedNotes] = useState<number[][]>([]);
+
   const [synth] = useState(() =>
     new Tone.PolySynth(Tone.Synth).toDestination()
   );
@@ -92,6 +94,8 @@ function App() {
                     focusedButton={focusedButton}
                     isDragging={isDragging}
                     setIsDragging={setIsDragging}
+                    playedNotes={playedNotes}
+                    setPlayedNotes={setPlayedNotes}
                   ></Note>
                 );
               })}
