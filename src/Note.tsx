@@ -26,9 +26,9 @@ export function Note({
   columnId: number;
   synth: Tone.PolySynth<Tone.Synth<Tone.SynthOptions>>;
   focusedButton: { row: number; column: number };
-  isDragging: { dragging: boolean; toggleOff: boolean };
+  isDragging: { dragging: boolean; startingButtonWasActive: boolean };
   setIsDragging: Dispatch<
-    SetStateAction<{ dragging: boolean; toggleOff: boolean }>
+    SetStateAction<{ dragging: boolean; startingButtonWasActive: boolean }>
   >;
 }) {
   const color = colors[rowId];
@@ -53,32 +53,32 @@ export function Note({
           },
         });
         setIsDragging((prev) => {
-          return { dragging: true, toggleOff: buttonIsOn ? true : false };
+          return {
+            dragging: true,
+            startingButtonWasActive: buttonIsOn ? true : false,
+          };
         });
       },
-      onDrag: ({ xy: [x, y], args }) => {},
-      onDragEnd: () =>
-        setIsDragging((prev) => {
-          return { ...prev, dragging: false };
-        }),
-      onHover: ({ xy: [x, y], dragging, args }) => {
-        if (
-          isDragging.dragging &&
-          document.elementFromPoint(x, y) === ref.current
-        ) {
-          if (!isDragging.toggleOff) {
-            synth.triggerAttackRelease(notes[rowId], "16n");
-          }
+      onDrag: ({ xy: [x, y], args }) => {
+        const elem = document.elementFromPoint(x, y);
+        if (elem) {
+          const newElementCoordinates = elem.id
+            .split(", ")
+            .map((string) => +string);
           dispatch({
             type: "toggle",
             payload: {
-              rowId: args[0],
-              columnId: args[1],
-              newValue: isDragging.toggleOff ? 0 : 1,
+              rowId: newElementCoordinates[0],
+              columnId: newElementCoordinates[1],
+              newValue: isDragging.startingButtonWasActive ? 0 : 1,
             },
           });
         }
       },
+      onDragEnd: () =>
+        setIsDragging((prev) => {
+          return { ...prev, dragging: false };
+        }),
     },
     { drag: { pointer: { capture: false } } }
   );
@@ -111,10 +111,11 @@ export function Note({
       style={{ outlineColor: color }}
       onClick={handleButtonClick}
       ref={ref}
+      id={`${rowId}, ${columnId}`}
       {...bind(rowId, columnId)}
     >
       <div
-        className="h-full transition-all"
+        className="h-full transition-all touch-none pointer-events-none"
         style={{
           width: grid[rowId][columnId] === 1 ? "100%" : "5%",
           opacity: grid[rowId][columnId] === 1 ? 1 : 0.3,

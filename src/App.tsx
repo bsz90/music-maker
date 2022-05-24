@@ -64,7 +64,7 @@ function App() {
 
   const [isDragging, setIsDragging] = useState({
     dragging: false,
-    toggleOff: false,
+    startingButtonWasActive: false,
   });
 
   const [synth] = useState(() =>
@@ -73,7 +73,7 @@ function App() {
 
   return (
     <div
-      className="h-screen w-full"
+      className="h-screen w-full touch-none"
       onKeyDown={({ key }) => focusDispatch({ type: key })}
     >
       <div className="w-full h-5/6 grid grid-row-[15] p-1 gap-1">
