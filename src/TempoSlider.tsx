@@ -4,7 +4,9 @@ import {
   ChangeEventHandler,
   Dispatch,
   SetStateAction,
+  useState,
 } from "react";
+import { useGesture } from "@use-gesture/react";
 
 const RIGHT_TICK = "M 50,60 l 30, -40";
 
@@ -20,6 +22,8 @@ export const TempoSlider = ({
   tempo: number;
   setTempo: Dispatch<SetStateAction<number>>;
 }) => {
+  const [isInputDragging, setIsInputDragging] = useState(false);
+
   const pendulum = (() => {
     // if (play === 1) {
     //   if (metronome > 1) {
@@ -48,6 +52,16 @@ export const TempoSlider = ({
       setTempo(40);
     }
   };
+
+  const bind = useGesture({
+    onDragStart: () => setIsInputDragging(true),
+    onDrag: ({ xy: [x, y], initial: [initialX, initialY] }) => {
+      setTempo((prev) => {
+        return clamp(Math.floor((initialY - y) / 5 + prev), 40, 200);
+      });
+    },
+    onDragEnd: () => setIsInputDragging(false),
+  });
 
   return (
     <div className="flex h-16 items-center justify-center grid-rows-1 gap-6">
@@ -84,6 +98,8 @@ export const TempoSlider = ({
           value={tempo}
           onChange={handleInputChange}
           onBlur={handleInputBlur}
+          disabled={isInputDragging}
+          {...bind()}
         ></input>
       </div>
     </div>
