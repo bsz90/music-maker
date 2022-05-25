@@ -1,6 +1,9 @@
 import { useEffect, useReducer, useState } from "react";
 import * as Tone from "tone";
+import { PlayButton } from "./PlayButton";
 import { Note } from "./Note";
+import { TempoSlider } from "./TempoSlider";
+import { VolumeButton } from "./VolumeButton";
 
 const initialState = Array.from({ length: 15 }, () =>
   Array.from({ length: 8 }, () => 0)
@@ -73,6 +76,12 @@ function App() {
     new Tone.PolySynth(Tone.Synth).toDestination()
   );
 
+  const [playing, setPlaying] = useState(false);
+
+  const [tempo, setTempo] = useState(120);
+
+  const [volume, setVolume] = useState(-20);
+
   return (
     <div
       className="h-screen w-full touch-none"
@@ -102,6 +111,11 @@ function App() {
             </div>
           );
         })}
+      </div>
+      <div className="border-t border-[#f58f4b] grid grid-cols-[20%_60%_20%] items-center justify-center w-full h-1/6 bg-[#f2e6c7]">
+        <PlayButton playing={playing} setPlaying={setPlaying} />
+        <TempoSlider tempo={tempo} setTempo={setTempo} />
+        <VolumeButton volume={volume} setVolume={setVolume} />
       </div>
     </div>
   );
