@@ -55,9 +55,19 @@ export const TempoSlider = ({
 
   const bind = useGesture({
     onDragStart: () => setIsInputDragging(true),
-    onDrag: ({ xy: [x, y], initial: [initialX, initialY] }) => {
+    onDrag: ({ xy: [x, y], initial: [initialX, initialY], direction }) => {
       setTempo((prev) => {
-        return clamp(Math.floor((initialY - y) / 5 + prev), 40, 200);
+        if (direction[1] < 0)
+          return clamp(
+            prev + Math.floor(Math.max((initialY - y) / 50, 1)),
+            40,
+            200
+          );
+        return clamp(
+          prev + Math.floor(Math.min((initialY - y) / 50, -1)),
+          40,
+          200
+        );
       });
     },
     onDragEnd: () => setIsInputDragging(false),
