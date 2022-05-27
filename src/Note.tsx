@@ -2,6 +2,7 @@ import { Dispatch, SetStateAction, useEffect, useRef } from "react";
 import { colors, notes } from "./constants";
 import * as Tone from "tone";
 import { useGesture } from "@use-gesture/react";
+import { ActionType } from "./types";
 
 const equals = (playedNotes: number[], newElementCoordinates: number[]) =>
   playedNotes.length === newElementCoordinates.length &&
@@ -65,7 +66,7 @@ export function Note({
           synth.triggerAttackRelease(notes[args[0]], "16n");
         }
         dispatch({
-          type: "toggle",
+          type: ActionType.TOGGLE,
           payload: {
             rowId: args[0],
             columnId: args[1],
@@ -81,7 +82,7 @@ export function Note({
       },
       onDrag: ({ xy: [x, y], args }) => {
         const elem = document.elementFromPoint(x, y);
-        if (elem) {
+        if (elem && elem.id) {
           const newElementCoordinates = elem.id
             .split(", ")
             .map((string) => +string);
@@ -99,7 +100,7 @@ export function Note({
           }
 
           dispatch({
-            type: "toggle",
+            type: ActionType.TOGGLE,
             payload: {
               rowId: newElementCoordinates[0],
               columnId: newElementCoordinates[1],
@@ -130,7 +131,7 @@ export function Note({
       synth.triggerAttackRelease(notes[rowId], "16n");
     }
     dispatch({
-      type: "toggle",
+      type: ActionType.TOGGLE,
       payload: { rowId, columnId, newValue: buttonIsOn ? 0 : 1 },
     });
   };

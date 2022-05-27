@@ -34,7 +34,7 @@ export const notes = [
   "C3",
 ];
 
-export const beatToPlayNote = [
+export const beats = [
   0,
   "0:0:2",
   "0:1",

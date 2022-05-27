@@ -4,6 +4,8 @@ import { PlayButton } from "./PlayButton";
 import { Note } from "./Note";
 import { TempoSlider } from "./TempoSlider";
 import { VolumeButton } from "./VolumeButton";
+import { beats, notes } from "./constants";
+import { ActionType } from "./types";
 
 const initialState = Array.from({ length: 15 }, () =>
   Array.from({ length: 8 }, () => 0)
@@ -20,14 +22,10 @@ function reducer(
   }
 ) {
   switch (type) {
-    case "toggle":
+    case ActionType.TOGGLE:
       let newState = [...state];
       newState[payload.rowId][payload.columnId] = payload.newValue;
       return newState;
-
-    case "reset":
-      return initialState;
-
     default:
       throw new Error();
   }
@@ -44,13 +42,13 @@ function focusReducer(
   const mod = (num: number, mod: number) => ((num % mod) + mod) % mod;
 
   switch (type) {
-    case "ArrowDown":
+    case ActionType.ARROW_DOWN:
       return { ...state, row: (state.row + 1) % 15 };
-    case "ArrowUp":
+    case ActionType.ARROW_UP:
       return { ...state, row: mod(state.row - 1, 15) };
-    case "ArrowRight":
+    case ActionType.ARROW_RIGHT:
       return { ...state, column: (state.column + 1) % 8 };
-    case "ArrowLeft":
+    case ActionType.ARROW_LEFT:
       return { ...state, column: mod(state.column - 1, 8) };
     default:
       return { ...state };
