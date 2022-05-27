@@ -1,16 +1,7 @@
 import * as Slider from "@radix-ui/react-slider";
-import {
-  ChangeEvent,
-  ChangeEventHandler,
-  Dispatch,
-  SetStateAction,
-  useState,
-} from "react";
+import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
 import { useGesture } from "@use-gesture/react";
-
-const RIGHT_TICK = "M 50,60 l 30, -40";
-
-const LEFT_TICK = "M 50,60 l -30, -40";
+import { Metronome } from "./types";
 
 const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max);
@@ -25,16 +16,16 @@ export const TempoSlider = ({
   const [isInputDragging, setIsInputDragging] = useState(false);
 
   const pendulum = (() => {
-    // if (play === 1) {
+    // if (playing) {
     //   if (metronome > 1) {
-    //     return RIGHT_TICK;
+    //     return Metronome.RIGHT_TICK;
     //   }
-    //   return LEFT_TICK;
+    //   return Metronome.LEFT_TICK;
     // }
     if (Math.floor(tempo / 10) % 2 === 1) {
-      return RIGHT_TICK;
+      return Metronome.RIGHT_TICK;
     }
-    return LEFT_TICK;
+    return Metronome.LEFT_TICK;
   })();
   const handleSliderChange = (event: number[]) => {
     setTempo(event[0]);
