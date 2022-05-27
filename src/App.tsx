@@ -82,6 +82,11 @@ function App() {
 
   const [volume, setVolume] = useState(-20);
 
+  useEffect(() => {
+    synth.volume.value = volume;
+    synth.maxPolyphony = grid[0].length * grid.length;
+  }, [synth, grid, volume]);
+
   return (
     <div
       className="h-screen w-full touch-none"
