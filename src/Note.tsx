@@ -31,6 +31,8 @@ export function Note({
   setIsDragging,
   playedNotes,
   setPlayedNotes,
+  currentBeat,
+  playing,
 }: {
   grid: number[][];
   dispatch: Dispatch<{
@@ -51,6 +53,8 @@ export function Note({
   >;
   playedNotes: number[][];
   setPlayedNotes: Dispatch<SetStateAction<number[][]>>;
+  currentBeat: { beat: number };
+  playing: boolean;
 }) {
   const color = colors[rowId];
 
@@ -60,19 +64,21 @@ export function Note({
 
   const bind = useGesture(
     {
-      onDragStart: ({ args }) => {
-        if (!buttonIsOn) {
-          setPlayedNotes([args]);
-          synth.triggerAttackRelease(notes[args[0]], "16n");
+      onDragStart: ({ args, down }) => {
+        if (down) {
+          if (!buttonIsOn) {
+            setPlayedNotes([args]);
+            synth.triggerAttackRelease(notes[args[0]], "16n");
+          }
+          dispatch({
+            type: ActionType.TOGGLE,
+            payload: {
+              rowId: args[0],
+              columnId: args[1],
+              newValue: buttonIsOn ? 0 : 1,
+            },
+          });
         }
-        dispatch({
-          type: ActionType.TOGGLE,
-          payload: {
-            rowId: args[0],
-            columnId: args[1],
-            newValue: buttonIsOn ? 0 : 1,
-          },
-        });
         setIsDragging((prev) => {
           return {
             dragging: true,
@@ -132,7 +138,11 @@ export function Note({
     }
     dispatch({
       type: ActionType.TOGGLE,
-      payload: { rowId, columnId, newValue: buttonIsOn ? 0 : 1 },
+      payload: {
+        rowId,
+        columnId,
+        newValue: buttonIsOn ? 0 : 1,
+      },
     });
   };
 
@@ -143,8 +153,13 @@ export function Note({
 
   return (
     <button
-      className="w-auto border-2 rounded-full overflow-hidden"
-      style={{ outlineColor: color }}
+      className="w-auto border-2 rounded-full overflow-hidden transition-all"
+      style={{
+        outlineColor: color,
+        transform: `scale(${
+          currentBeat.beat === columnId + 1 && buttonIsOn && playing ? 1.1 : 1
+        })`,
+      }}
       onClick={handleButtonClick}
       ref={ref}
       id={`${rowId}, ${columnId}`}
