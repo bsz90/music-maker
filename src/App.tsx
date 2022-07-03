@@ -51,7 +51,22 @@ function focusReducer(
     case ActionType.ARROW_LEFT:
       return { ...state, column: mod(state.column - 1, 8) };
     default:
-      return { ...state };
+      return state;
+  }
+}
+
+function beatReducer(state: { beat: number }, { type }: { type: string }) {
+  switch (type) {
+    case ActionType.INCREMENT: {
+      const newState = { ...state };
+      const prevCount = state.beat;
+      newState.beat = (prevCount + 1) % 8;
+      return newState;
+    }
+    case ActionType.RESET:
+      return { beat: -1 };
+    default:
+      throw new Error();
   }
 }
 
@@ -62,6 +77,8 @@ function App() {
     row: 0,
     column: 0,
   });
+
+  const [currentBeat, beatDispatch] = useReducer(beatReducer, { beat: -1 });
 
   const [isDragging, setIsDragging] = useState({
     dragging: false,
@@ -84,6 +101,51 @@ function App() {
     synth.volume.value = volume;
     synth.maxPolyphony = grid[0].length * grid.length;
   }, [synth, grid, volume]);
+
+  useEffect(() => {
+    Tone.Transport.bpm.rampTo(tempo);
+  }, [tempo]);
+
+  useEffect(() => {
+    const arrayToPassToPart = () => {
+      const arrayOfEveryBeat = beats.map((beat, id) => [beat]);
+      const arrayOfNotesToBePlayed = grid
+        .flatMap((row, rowIndex) =>
+          row.map((cell, columnIndex) =>
+            cell === 1 ? [beats[columnIndex], notes[rowIndex]] : undefined
+          )
+        )
+        .filter(Boolean) as [string, number][];
+      if (arrayOfNotesToBePlayed.length === 0) return arrayOfEveryBeat;
+
+      for (let i = 0; i < arrayOfEveryBeat.length; i++) {
+        for (let j = 0; j < arrayOfNotesToBePlayed.length; j++) {
+          if (arrayOfEveryBeat[i][0] === arrayOfNotesToBePlayed[j][0])
+            arrayOfEveryBeat[i].push(arrayOfNotesToBePlayed[j][1]);
+        }
+      }
+
+      return arrayOfEveryBeat;
+    };
+
+    const part = new Tone.Part((time, note) => {
+      synth.triggerAttackRelease(note, 0.2, time);
+      beatDispatch({ type: ActionType.INCREMENT });
+    }, arrayToPassToPart()).start(0);
+    part.mute = volume < -59;
+    part.loop = true;
+
+    if (playing) {
+      Tone.Transport.start();
+    } else {
+      Tone.Transport.stop();
+      beatDispatch({ type: ActionType.RESET });
+    }
+
+    return () => {
+      part.dispose();
+    };
+  }, [grid, volume, playing, synth]);
 
   return (
     <div
@@ -108,6 +170,8 @@ function App() {
                     setIsDragging={setIsDragging}
                     playedNotes={playedNotes}
                     setPlayedNotes={setPlayedNotes}
+                    currentBeat={currentBeat}
+                    playing={playing}
                   ></Note>
                 );
               })}

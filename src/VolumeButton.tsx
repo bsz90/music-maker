@@ -3,7 +3,6 @@ import {
   Dispatch,
   SetStateAction,
   useRef,
-  useEffect,
   MutableRefObject,
 } from "react";
 import * as Slider from "@radix-ui/react-slider";
