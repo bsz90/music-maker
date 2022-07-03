@@ -9,4 +9,6 @@ export enum ActionType {
   ARROW_RIGHT = "ArrowRight",
   ARROW_LEFT = "ArrowLeft",
   TOGGLE = "toggle",
+  INCREMENT = "increment",
+  RESET = "reset",
 }

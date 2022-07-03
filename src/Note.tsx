@@ -79,7 +79,7 @@ export function Note({
             },
           });
         }
-        setIsDragging((prev) => {
+        setIsDragging(() => {
           return {
             dragging: true,
             startingButtonWasActive: buttonIsOn ? true : false,
@@ -126,13 +126,9 @@ export function Note({
   );
 
   const handleButtonClick = () => {
-    if (isDragging) {
-      setIsDragging((prev) => {
-        return { ...prev, dragging: false };
-      });
-      return;
-    }
-
+    setIsDragging((prev) => {
+      return { ...prev, dragging: false };
+    });
     if (!buttonIsOn) {
       synth.triggerAttackRelease(notes[rowId], "16n");
     }
@@ -145,6 +141,7 @@ export function Note({
       },
     });
   };
+  // };
 
   useEffect(() => {
     if (focusedButton.row === rowId && focusedButton.column === columnId)
@@ -153,11 +150,11 @@ export function Note({
 
   return (
     <button
-      className="w-auto border-2 rounded-full overflow-hidden transition-all"
+      className="w-auto border-2 rounded-full overflow-hidden"
       style={{
         outlineColor: color,
         transform: `scale(${
-          currentBeat.beat === columnId + 1 && buttonIsOn && playing ? 1.1 : 1
+          currentBeat.beat === columnId && buttonIsOn && playing ? 1.1 : 1
         })`,
       }}
       onClick={handleButtonClick}
